@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego D&D - Aventura de Mazmorras</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎲 Aventura de Mazmorras</h1>
+            <p>Juego de Tablero estilo D&D</p>
+        </header>
+
+        <!-- Pantalla de selección de personaje -->
+        <div id="character-selection" class="screen active">
+            <h2>Selecciona tu Personaje</h2>
+            <div class="character-grid">
+                <div class="character-card" data-class="warrior">
+                    <div class="character-icon">⚔️</div>
+                    <h3>Guerrero</h3>
+                    <div class="stats">
+                        <p>❤️ Vida: 120</p>
+                        <p>⚡ Fuerza: 18</p>
+                        <p>🛡️ Defensa: 15</p>
+                        <p>✨ Magia: 5</p>
+                    </div>
+                    <button onclick="selectCharacter('warrior')">Seleccionar</button>
+                </div>
+
+                <div class="character-card" data-class="mage">
+                    <div class="character-icon">🧙</div>
+                    <h3>Mago</h3>
+                    <div class="stats">
+                        <p>❤️ Vida: 80</p>
+                        <p>⚡ Fuerza: 8</p>
+                        <p>🛡️ Defensa: 8</p>
+                        <p>✨ Magia: 20</p>
+                    </div>
+                    <button onclick="selectCharacter('mage')">Seleccionar</button>
+                </div>
+
+                <div class="character-card" data-class="rogue">
+                    <div class="character-icon">🗡️</div>
+                    <h3>Ladrón</h3>
+                    <div class="stats">
+                        <p>❤️ Vida: 100</p>
+                        <p>⚡ Fuerza: 14</p>
+                        <p>🛡️ Defensa: 12</p>
+                        <p>✨ Magia: 10</p>
+                    </div>
+                    <button onclick="selectCharacter('rogue')">Seleccionar</button>
+                </div>
+
+                <div class="character-card" data-class="cleric">
+                    <div class="character-icon">✨</div>
+                    <h3>Clérigo</h3>
+                    <div class="stats">
+                        <p>❤️ Vida: 100</p>
+                        <p>⚡ Fuerza: 12</p>
+                        <p>🛡️ Defensa: 13</p>
+                        <p>✨ Magia: 16</p>
+                    </div>
+                    <button onclick="selectCharacter('cleric')">Seleccionar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de juego -->
+        <div id="game-screen" class="screen">
+            <!-- Panel de información del jugador -->
+            <div class="player-panel">
+                <div class="player-info">
+                    <h3><span id="player-icon"></span> <span id="player-class"></span></h3>
+                    <div class="stat-bars">
+                        <div class="stat-bar">
+                            <label>❤️ Vida: <span id="player-hp">100</span>/<span id="player-max-hp">100</span></label>
+                            <div class="bar">
+                                <div id="hp-bar" class="bar-fill hp"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <label>✨ Maná: <span id="player-mana">50</span>/<span id="player-max-mana">50</span></label>
+                            <div class="bar">
+                                <div id="mana-bar" class="bar-fill mana"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="player-stats">
+                        <span>⚔️ Ataque: <strong id="player-attack">0</strong></span>
+                        <span>🛡️ Defensa: <strong id="player-defense">0</strong></span>
+                        <span>💰 Oro: <strong id="player-gold">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tablero de juego -->
+            <div class="game-board">
+                <div id="board" class="board"></div>
+            </div>
+
+            <!-- Panel de acciones -->
+            <div class="action-panel">
+                <div class="dice-section">
+                    <h3>🎲 Tirar Dados</h3>
+                    <div class="dice-buttons">
+                        <button onclick="rollDice(4)" class="dice-btn">d4</button>
+                        <button onclick="rollDice(6)" class="dice-btn">d6</button>
+                        <button onclick="rollDice(8)" class="dice-btn">d8</button>
+                        <button onclick="rollDice(10)" class="dice-btn">d10</button>
+                        <button onclick="rollDice(12)" class="dice-btn">d12</button>
+                        <button onclick="rollDice(20)" class="dice-btn d20">d20</button>
+                    </div>
+                    <div id="dice-result" class="dice-result"></div>
+                </div>
+
+                <div class="actions-section">
+                    <h3>⚡ Acciones</h3>
+                    <button onclick="movePlayer()" class="action-btn">🚶 Mover</button>
+                    <button onclick="heal()" class="action-btn">💚 Curar (10 maná)</button>
+                    <button onclick="resetGame()" class="action-btn secondary">🔄 Nuevo Juego</button>
+                </div>
+            </div>
+
+            <!-- Log de eventos -->
+            <div class="event-log">
+                <h3>📜 Registro de Eventos</h3>
+                <div id="log" class="log-content"></div>
+            </div>
+        </div>
+
+        <!-- Pantalla de combate -->
+        <div id="combat-screen" class="screen combat-overlay">
+            <div class="combat-modal">
+                <h2>⚔️ ¡COMBATE!</h2>
+                <div class="combat-area">
+                    <div class="combatant player-combatant">
+                        <div class="combatant-icon" id="combat-player-icon">⚔️</div>
+                        <h3 id="combat-player-name">Guerrero</h3>
+                        <div class="combat-hp">
+                            <label>❤️ <span id="combat-player-hp">100</span>/<span id="combat-player-max-hp">100</span></label>
+                            <div class="bar">
+                                <div id="combat-hp-bar" class="bar-fill hp"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vs">VS</div>
+
+                    <div class="combatant enemy-combatant">
+                        <div class="combatant-icon" id="enemy-icon">👹</div>
+                        <h3 id="enemy-name">Enemigo</h3>
+                        <div class="combat-hp">
+                            <label>❤️ <span id="enemy-hp">50</span>/<span id="enemy-max-hp">50</span></label>
+                            <div class="bar">
+                                <div id="enemy-hp-bar" class="bar-fill enemy"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="combat-log" id="combat-log"></div>
+
+                <div class="combat-actions">
+                    <button onclick="attack()" class="combat-btn attack">⚔️ Atacar</button>
+                    <button onclick="specialAttack()" class="combat-btn special">✨ Ataque Especial (15 maná)</button>
+                    <button onclick="defend()" class="combat-btn defend">🛡️ Defender</button>
+                    <button onclick="flee()" class="combat-btn flee">🏃 Huir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
 
